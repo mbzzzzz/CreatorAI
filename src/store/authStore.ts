@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '../types';
-import api from '../services/api';
 
 interface AuthState {
   user: User | null;
@@ -38,31 +37,48 @@ export const useAuthStore = create<AuthState>()(
         try {
           console.log('Attempting login for:', email);
           
-          const response = await api.post('/auth/login', { 
-            email: email.trim().toLowerCase(), 
-            password 
-          });
+          // Mock successful login for preview
+          const mockUser = {
+            id: '1',
+            email: email.trim().toLowerCase(),
+            firstName: 'Demo',
+            lastName: 'User',
+            subscription: {
+              plan: 'pro' as const,
+              status: 'active' as const,
+              expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            usage: {
+              contentGenerated: 25,
+              postsScheduled: 12,
+              aiCallsThisMonth: 37,
+              lastResetDate: new Date().toISOString()
+            },
+            preferences: {
+              theme: 'system' as const,
+              notifications: {
+                email: true,
+                push: true
+              }
+            }
+          };
           
-          console.log('Login response:', response.data);
-          
-          const { user, accessToken, refreshToken } = response.data;
+          const accessToken = 'mock-access-token';
+          const refreshToken = 'mock-refresh-token';
           
           set({
-            user,
+            user: mockUser,
             accessToken,
             refreshToken,
             isAuthenticated: true,
             isLoading: false,
             error: null
           });
-
-          // Set default authorization header
-          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
           
           console.log('Login successful');
         } catch (error: any) {
           console.error('Login error:', error);
-          const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+          const errorMessage = 'Login failed';
           set({ 
             isLoading: false, 
             error: errorMessage,
@@ -80,31 +96,48 @@ export const useAuthStore = create<AuthState>()(
         try {
           console.log('Attempting registration for:', userData.email);
           
-          const response = await api.post('/auth/register', {
-            ...userData,
-            email: userData.email.trim().toLowerCase()
-          });
+          // Mock successful registration for preview
+          const mockUser = {
+            id: '1',
+            email: userData.email.trim().toLowerCase(),
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            subscription: {
+              plan: 'free' as const,
+              status: 'active' as const,
+              expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+            },
+            usage: {
+              contentGenerated: 0,
+              postsScheduled: 0,
+              aiCallsThisMonth: 0,
+              lastResetDate: new Date().toISOString()
+            },
+            preferences: {
+              theme: 'system' as const,
+              notifications: {
+                email: true,
+                push: true
+              }
+            }
+          };
           
-          console.log('Registration response:', response.data);
-          
-          const { user, accessToken, refreshToken } = response.data;
+          const accessToken = 'mock-access-token';
+          const refreshToken = 'mock-refresh-token';
           
           set({
-            user,
+            user: mockUser,
             accessToken,
             refreshToken,
             isAuthenticated: true,
             isLoading: false,
             error: null
           });
-
-          // Set default authorization header
-          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
           
           console.log('Registration successful');
         } catch (error: any) {
           console.error('Registration error:', error);
-          const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
+          const errorMessage = 'Registration failed';
           set({ 
             isLoading: false, 
             error: errorMessage,
@@ -127,33 +160,13 @@ export const useAuthStore = create<AuthState>()(
           error: null
         });
         
-        // Remove authorization header
-        delete api.defaults.headers.common['Authorization'];
-        
         // Clear localStorage
         localStorage.removeItem('auth-storage');
       },
 
       refreshAccessToken: async () => {
-        const { refreshToken } = get();
-        if (!refreshToken) {
-          get().logout();
-          return;
-        }
-
-        try {
-          console.log('Refreshing access token...');
-          const response = await api.post('/auth/refresh', { refreshToken });
-          const { accessToken } = response.data;
-          
-          set({ accessToken });
-          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          console.log('Token refreshed successfully');
-        } catch (error) {
-          console.error('Token refresh failed:', error);
-          get().logout();
-          throw error;
-        }
+        // Mock token refresh for preview
+        console.log('Token refresh not needed in preview mode');
       },
 
       updateUser: (userData) => {

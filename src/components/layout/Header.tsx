@@ -21,6 +21,12 @@ const Header: React.FC = () => {
   const [showBrandMenu, setShowBrandMenu] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
+  // Initialize brands on component mount
+  const { fetchBrands } = useBrandStore();
+  React.useEffect(() => {
+    fetchBrands();
+  }, [fetchBrands]);
+
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
     // In a real app, you'd persist this to localStorage and apply to document

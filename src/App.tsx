@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from './store/authStore';
-import { useBrandStore } from './store/brandStore';
 
 // Layout Components
 import Sidebar from './components/layout/Sidebar';
@@ -25,12 +24,6 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 // Layout Component
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { fetchBrands } = useBrandStore();
-  
-  React.useEffect(() => {
-    fetchBrands();
-  }, [fetchBrands]);
-
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
